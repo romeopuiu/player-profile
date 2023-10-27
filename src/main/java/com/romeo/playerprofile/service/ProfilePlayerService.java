@@ -42,48 +42,16 @@ public class ProfilePlayerService {
 
         checkClanExists(clan);
 
-        setClanAndDevices(playerProfile, clan, profileDTO);
+        setClan(clan, playerProfile, profileDTO);
+
+        setDevices(playerProfile, profileDTO);
 
         saveEntities(clan, playerProfile);
 
         return playerProfileMapper.toDto(playerProfile);
     }
 
-    private PlayerProfile createPlayerProfile(PlayerProfileDTO profileDTO) {
-        var playerProfile = playerProfileMapper.toEntity(profileDTO);
-        playerProfile.setDevices(deviceMapper.toEntityList(profileDTO.getDevices()));
-        return playerProfile;
-    }
-
-    private Clan createClan(PlayerProfileDTO profileDTO) {
-        return clanMapper.toEntity(profileDTO.getClan());
-    }
-
-    private void checkClanExists(Clan clan) {
-        Optional<Clan> optionalClan = clanRepository.findById(clan.getId());
-        if (optionalClan.isPresent()) {
-            throw new IllegalArgumentException("Clan id is present in database: " + clan.getId());
-        }
-    }
-
-    private void setClanAndDevices(PlayerProfile playerProfile, Clan clan, PlayerProfileDTO profileDTO) {
-        clan.setPlayerProfile(playerProfile);
-        playerProfile.setClan(clan);
-
-        var devices = playerProfile.getDevices();
-        devices.forEach(device -> device.setPlayerProfile(playerProfile));
-
-        profileDTO.setClan(clanMapper.toDto(clan));
-        profileDTO.setDevices(deviceMapper.toDtoList(devices));
-    }
-
-    private void saveEntities(Clan clan, PlayerProfile playerProfile) {
-        clanRepository.save(clan);
-        deviceRepository.saveAll(playerProfile.getDevices());
-        playerProfileRepository.save(playerProfile);
-    }
-
-    @Transactional(readOnly = true)
+    @Transactional
     public PlayerProfileDTO getPlayer(UUID playerId) {
         var playerProfile = playerProfileRepository.findByPlayerId(playerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Player profile not found for this playerId: {}," + playerId));
@@ -103,11 +71,44 @@ public class ProfilePlayerService {
         return playerProfileMapper.toDto(playerProfile);
     }
 
+
+  /*  private void setClanAndDevices(PlayerProfile playerProfile, Clan clan, PlayerProfileDTO profileDTO) {
+        clan.setPlayerProfile(playerProfile);
+        playerProfile.setClan(clan);
+
+        var devices = playerProfile.getDevices();
+        devices.forEach(device -> device.setPlayerProfile(playerProfile));
+
+        profileDTO.setClan(clanMapper.toDto(clan));
+        profileDTO.setDevices(deviceMapper.toDtoList(devices));
+    }*/
+
+    private void setClan(Clan clan, PlayerProfile playerProfile, PlayerProfileDTO profileDTO) {
+        clan.setPlayerProfile(playerProfile);
+        playerProfile.setClan(clan);
+
+        profileDTO.setClan(clanMapper.toDto(clan));
+    }
+
+    private void setDevices(PlayerProfile playerProfile, PlayerProfileDTO profileDTO) {
+        var devices = playerProfile.getDevices();
+        devices.forEach(device -> device.setPlayerProfile(playerProfile));
+
+        profileDTO.setDevices(deviceMapper.toDtoList(devices));
+    }
+
+
+    private void saveEntities(Clan clan, PlayerProfile playerProfile) {
+        clanRepository.save(clan);
+        deviceRepository.saveAll(playerProfile.getDevices());
+        playerProfileRepository.save(playerProfile);
+    }
+
     private boolean campaignMatches(PlayerProfile playerProfile, Matchers matchers) {
         // Check level condition
         var playerLevel = playerProfile.getLevel();
         if (matchers.getLevel() != null &&
-                (playerLevel == matchers.getLevel().getMin() || playerLevel == matchers.getLevel().getMax())) {
+                (playerLevel  >=  matchers.getLevel().getMin() || playerLevel <= matchers.getLevel().getMax())) {
             return true;
         }
 
@@ -127,5 +128,22 @@ public class ProfilePlayerService {
         // Check excluded items condition
         return matchers.getDoesNotHave() != null && matchers.getDoesNotHave().getItems() != null &&
                 playerItems.stream().anyMatch(matchers.getDoesNotHave().getItems()::contains);
+    }
+
+    private PlayerProfile createPlayerProfile(PlayerProfileDTO profileDTO) {
+        var playerProfile = playerProfileMapper.toEntity(profileDTO);
+        playerProfile.setDevices(deviceMapper.toEntityList(profileDTO.getDevices()));
+        return playerProfile;
+    }
+
+    private Clan createClan(PlayerProfileDTO profileDTO) {
+        return clanMapper.toEntity(profileDTO.getClan());
+    }
+
+    private void checkClanExists(Clan clan) {
+        Optional<Clan> optionalClan = clanRepository.findById(clan.getId());
+        if (optionalClan.isPresent()) {
+            throw new IllegalArgumentException("Clan id is present in database: " + clan.getId());
+        }
     }
 }

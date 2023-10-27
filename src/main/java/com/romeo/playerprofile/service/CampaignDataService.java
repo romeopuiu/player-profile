@@ -1,10 +1,7 @@
 package com.romeo.playerprofile.service;
 
 import com.romeo.playerprofile.domain.CampaignData;
-import com.romeo.playerprofile.domain.Level;
-import com.romeo.playerprofile.domain.DoesNotHave;
 import com.romeo.playerprofile.domain.Matchers;
-import com.romeo.playerprofile.domain.Has;
 import com.romeo.playerprofile.dto.CampaignDataDTO;
 import com.romeo.playerprofile.mapper.CampaignDataMapper;
 import com.romeo.playerprofile.repository.LevelRepository;
@@ -40,26 +37,38 @@ public class CampaignDataService {
 
     @Transactional
     public CampaignData save(CampaignData campaignData) {
-        Matchers matchers = campaignData.getMatchers();
-        Level level = matchers.getLevel();
-        Has has = matchers.getHas();
-        DoesNotHave doesNotHave = matchers.getDoesNotHave();
+        var matchers = campaignData.getMatchers();
+        setMatchersForConditions(matchers);
 
-        has.setMatchers(matchers);
-        level.setMatchers(matchers);
-        doesNotHave.setMatchers(matchers);
-
-        doesNotHaveRepository.save(doesNotHave);
-        levelRepository.save(level);
-        hasRepository.save(has);
-
-        matchersRepository.save(matchers);
+        saveConditions(matchers);
+        saveMatchers(matchers);
 
         return campaignDataRepository.save(campaignData);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public CampaignData findCurrentCampaignData() {
         return campaignDataRepository.findCurrentCampaignData();
     }
+
+    private void setMatchersForConditions(Matchers matchers) {
+        var level = matchers.getLevel();
+        var has = matchers.getHas();
+        var doesNotHave = matchers.getDoesNotHave();
+
+        has.setMatchers(matchers);
+        level.setMatchers(matchers);
+        doesNotHave.setMatchers(matchers);
+    }
+
+    private void saveConditions(Matchers matchers) {
+        doesNotHaveRepository.save(matchers.getDoesNotHave());
+        levelRepository.save(matchers.getLevel());
+        hasRepository.save(matchers.getHas());
+    }
+
+    private void saveMatchers(Matchers matchers) {
+        matchersRepository.save(matchers);
+    }
+
 }
