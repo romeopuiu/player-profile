@@ -21,11 +21,10 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.Set;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
-import java.util.List;
+import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -76,13 +75,13 @@ public class PlayerProfile implements Serializable {
 
     @ElementCollection(fetch = EAGER)
     @Column(name = "active_campaigns")
-    private List<String> activeCampaigns = new ArrayList<>();
+    private Collection<String> activeCampaigns = new ArrayList<>();
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @JsonIgnore
     @OneToMany(mappedBy = "playerProfile", cascade = CascadeType.ALL)
-    private Set<Device> devices = new HashSet<>();
+    private Collection<Device> devices = new HashSet<>();
 
     @Column(name = "level")
     private Integer level;

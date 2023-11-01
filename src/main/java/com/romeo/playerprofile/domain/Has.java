@@ -21,7 +21,7 @@ import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 @Entity
 @Table(name = "has")
@@ -38,11 +38,11 @@ public class Has implements Serializable {
 
     @ElementCollection
     @Column(name = "country")
-    private List<String> country = new ArrayList<>();
+    private Collection<String> country = new ArrayList<>();
 
     @ElementCollection
     @Column(name = "items")
-    private List<String> items = new ArrayList<>();
+    private Collection<String> items = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude

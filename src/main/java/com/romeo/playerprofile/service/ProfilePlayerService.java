@@ -71,18 +71,6 @@ public class ProfilePlayerService {
         return playerProfileMapper.toDto(playerProfile);
     }
 
-
-  /*  private void setClanAndDevices(PlayerProfile playerProfile, Clan clan, PlayerProfileDTO profileDTO) {
-        clan.setPlayerProfile(playerProfile);
-        playerProfile.setClan(clan);
-
-        var devices = playerProfile.getDevices();
-        devices.forEach(device -> device.setPlayerProfile(playerProfile));
-
-        profileDTO.setClan(clanMapper.toDto(clan));
-        profileDTO.setDevices(deviceMapper.toDtoList(devices));
-    }*/
-
     private void setClan(Clan clan, PlayerProfile playerProfile, PlayerProfileDTO profileDTO) {
         clan.setPlayerProfile(playerProfile);
         playerProfile.setClan(clan);
@@ -107,6 +95,7 @@ public class ProfilePlayerService {
     private boolean campaignMatches(PlayerProfile playerProfile, Matchers matchers) {
         // Check level condition
         var playerLevel = playerProfile.getLevel();
+
         if (matchers.getLevel() != null &&
                 (playerLevel  >=  matchers.getLevel().getMin() || playerLevel <= matchers.getLevel().getMax())) {
             return true;
@@ -114,6 +103,7 @@ public class ProfilePlayerService {
 
         // Check country condition
         var playerCountry = playerProfile.getCountry();
+
         if (matchers.getHas() != null && matchers.getHas().getCountry() != null &&
                 matchers.getHas().getCountry().contains(playerCountry)) {
             return true;
@@ -121,6 +111,7 @@ public class ProfilePlayerService {
 
         // Check items condition
         var playerItems = new ArrayList<>(playerProfile.getInventory().keySet());
+
         if (matchers.getHas() != null && matchers.getHas().getItems() != null &&
                 new HashSet<>(playerItems).containsAll(matchers.getHas().getItems())) {
             return true;
@@ -142,6 +133,7 @@ public class ProfilePlayerService {
 
     private void checkClanExists(Clan clan) {
         Optional<Clan> optionalClan = clanRepository.findById(clan.getId());
+
         if (optionalClan.isPresent()) {
             throw new IllegalArgumentException("Clan id is present in database: " + clan.getId());
         }

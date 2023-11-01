@@ -6,10 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.Date;
-import java.util.Set;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.Map;
@@ -42,9 +41,9 @@ public class PlayerProfileDTO {
 
     private String lastPurchase;
 
-    private List<String> activeCampaigns = new ArrayList<>();
+    private Collection<String> activeCampaigns = new ArrayList<>();
 
-    private Set<DeviceDTO> devices = new HashSet<>();
+    private Collection<DeviceDTO> devices = new HashSet<>();
 
     private Integer level;
 

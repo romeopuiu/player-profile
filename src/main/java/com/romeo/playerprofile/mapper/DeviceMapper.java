@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,13 +25,13 @@ public class DeviceMapper {
 
     }
 
-    public Set<Device> toEntityList(Set<DeviceDTO> dtoList) {
+    public Set<Device> toEntityList(Collection<DeviceDTO> dtoList) {
         return dtoList.stream()
                 .map(this::toEntity)
                 .collect(Collectors.toSet());
     }
 
-    public Set<DeviceDTO> toDtoList(Set<Device> entityList) {
+    public Set<DeviceDTO> toDtoList(Collection<Device> entityList) {
         return entityList.stream()
                 .map(this::toDto)
                 .collect(Collectors.toSet());

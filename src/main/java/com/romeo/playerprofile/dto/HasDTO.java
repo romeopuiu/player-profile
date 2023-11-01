@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 @Data
 @NoArgsConstructor
@@ -14,8 +14,8 @@ public class HasDTO {
 
     private Integer id;
 
-    private List<String> country = new ArrayList<>();
+    private Collection<String> country = new ArrayList<>();
 
-    private List<String> items = new ArrayList<>();
+    private Collection<String> items = new ArrayList<>();
 
 }
